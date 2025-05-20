@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: blogapi
+    env: python
+    buildCommand: ""
+    startCommand: gunicorn blog.wsgi:application
+    envVars:
+      - key: DEBUG
+        value: False
+      - key: SECRET_KEY
+        value: 'django-insecure-$#ea)1o*wyl%47&01fq%qa!rh#&(dx(m8t&l!m%zb5)0#5eh4l'
+      - key: DB_NAME
+        value: 'postgres'
+      - key: DB_USER
+        value: 'postgres'
+      - key: DB_PASSWORD
+        value: 'qqqqwwwweeeerrrrtttt'
+      - key: DB_HOST
+        value: 'db.kwmzfaneghdgcjqkjvlu.supabase.co'
+      - key: DB_PORT
+        value: '5432'
+      - key: CLOUDINARY_CLOUD_NAME
+        value: 'dfcon4lff'
+      - key: CLOUDINARY_API_KEY
+        value: '649471191955829'
+      - key: CLOUDINARY_API_SECRET
+        value: 'dXgjR1v3s5Rus9ouEvHJaiOujPM'
+
+
+
+
