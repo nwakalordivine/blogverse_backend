@@ -1,9 +1,13 @@
-from .models import Blogpost, Comment
-from .serializers import BlogpostSerializer, BlogimageSerializer, CommentSerializer
+from .models import Blogpost, Comment, Notification
+from .serializers import BlogpostSerializer, BlogimageSerializer, CommentSerializer, NotificationSerializer
 from rest_framework import generics, permissions, filters
 from blogpost.permissions import IsOwnerOrReadOnly
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.db.models import Count
+from core.models import Userprofile
 # Create your views here.
 
 class BlogpostListCreateAPIView(generics.ListCreateAPIView):
@@ -56,7 +60,17 @@ class CommentListCreateAPIView(generics.ListCreateAPIView):
         return [permissions.AllowAny()]
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        comment = serializer.save(author=self.request.user)
+        post = comment.post
+        # Send notification
+        if post.author != self.request.user:
+            Notification.objects.create(
+                recipient=post.author,
+                sender=self.request.user,
+                post=post,
+                notification_type='comment',
+                message=f"{self.request.user.userprofile.first_name} commented on your post."
+            )
 
     def get_queryset(self):
         post_id = self.request.query_params.get('post')
@@ -72,4 +86,61 @@ class CommentRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView)
         if self.request.method in ['PUT', 'PATCH', 'DELETE']:
             return [permissions.IsAuthenticated(), IsOwnerOrReadOnly()]
         return [permissions.AllowAny()]
-    
+
+class LikePostAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        post = Blogpost.objects.get(pk=pk)
+        post.likes.add(request.user)
+        # Send notification
+        if post.author != request.user:
+            Notification.objects.create(
+                recipient=post.author,
+                sender=request.user,
+                post=post,
+                notification_type='like',
+                message=f"{request.user.userprofile.first_name} liked your post."
+            )
+        return Response({'status': 'liked', 'like_count': post.like_count})
+
+class UnlikePostAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        post = Blogpost.objects.get(pk=pk)
+        post.likes.remove(request.user)
+        return Response({'status': 'unliked', 'like_count': post.like_count})
+
+class TrendingPostsAPIView(generics.ListAPIView):
+    serializer_class = BlogpostSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return Blogpost.objects.annotate(num_likes=Count('likes')).order_by('-num_likes')
+
+class NotificationListAPIView(generics.ListAPIView):
+    serializer_class = NotificationSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Notification.objects.filter(recipient=self.request.user).order_by('-created_at')
+
+class AuthorDashboardAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        profile = Userprofile.objects.get(user=user)
+        posts = Blogpost.objects.filter(author=user)
+        total_likes = sum(post.likes.count() for post in posts)
+        posts_data = BlogpostSerializer(posts, many=True, context={'request': request}).data
+
+        return Response({
+            "first_name": profile.first_name,
+            "last_name": profile.last_name,
+            "avatar": profile.avatar.url if profile.avatar else None,
+            "total_likes": total_likes,
+            "posts": posts_data
+        })
+

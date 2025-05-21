@@ -9,4 +9,9 @@ urlpatterns = [
     path('comments/', views.CommentListCreateAPIView.as_view(), name='comment-list-create'),
     path('comments/<int:pk>/', views.CommentRetrieveUpdateDestroyAPIView.as_view(), name='comment-detail'),
     path('posts/?search=<search_term>', views.BlogpostListCreateAPIView.as_view(), name="search posts by title, tag or category"),
+    path('posts/<int:pk>/like/', views.LikePostAPIView.as_view(), name='like-post'),
+    path('posts/<int:pk>/unlike/', views.UnlikePostAPIView.as_view(), name='unlike-post'),
+    path('posts/trending/', views.TrendingPostsAPIView.as_view(), name='trending-posts'),
+    path('notifications/', views.NotificationListAPIView.as_view(), name='notifications'),
+    path('dashboard/', views.AuthorDashboardAPIView.as_view(), name='author-dashboard')
 ]
