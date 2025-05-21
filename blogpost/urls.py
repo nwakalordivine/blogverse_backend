@@ -6,4 +6,7 @@ urlpatterns = [
     path("posts/<int:pk>/", views.BlogPostDetailAPIView.as_view(), name="Get specific post/UpdateDelte by Author"),
     path("upload/image/", views.BlogimageCreateAPIViews.as_view(), name="Uploads image by Author"),
     path("update/image/<int:pk>/", views.BlogimageRetrieveUpdateDestroyAPIViews.as_view(), name="update/delete image by Author"),
+    path('comments/', views.CommentListCreateAPIView.as_view(), name='comment-list-create'),
+    path('comments/<int:pk>/', views.CommentRetrieveUpdateDestroyAPIView.as_view(), name='comment-detail'),
+    path('posts/?search=<search_term>', views.BlogpostListCreateAPIView.as_view(), name="search posts by title, tag or category"),
 ]
