@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'cloudinary_storage',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
-    'drf_yasg'
+    'drf_yasg',
+    'corsheaders'
 
 ]
 
@@ -63,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware'
 ]
 
 ROOT_URLCONF = 'blogapi.urls'
@@ -96,6 +98,7 @@ WSGI_APPLICATION = 'blogapi.wsgi.application'
 #     }
 # }
 
+CORS_ALLOW_ALL_ORIGINS = True
 
 DATABASES = {
     'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
