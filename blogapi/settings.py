@@ -14,7 +14,7 @@ from pathlib import Path
 import cloudinary
 import os
 from dotenv import load_dotenv
-import dj_database_url
+# import dj_database_url
 from datetime import timedelta
 
 load_dotenv()
@@ -101,7 +101,17 @@ WSGI_APPLICATION = 'blogapi.wsgi.application'
 CORS_ALLOW_ALL_ORIGINS = True
 
 DATABASES = {
-    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'neondb',
+        'USER': 'neondb_owner',
+        'PASSWORD': 'npg_JlT9wxqDIa2U',
+        'HOST': 'ep-tiny-sun-a2b1zpi6-pooler.eu-central-1.aws.neon.tech',
+        'PORT': '5432',
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
+    }
 }
 
 
