@@ -61,6 +61,6 @@ class NotificationSerializer(serializers.ModelSerializer):
 class AuthorDashboardSerializer(serializers.Serializer):
     first_name = serializers.CharField()
     last_name = serializers.CharField()
-    avatar = serializers.CharField()
+    avatar = serializers.CharField(allow_null=True)
     total_likes = serializers.IntegerField()
     posts = BlogpostSerializer(many=True)
