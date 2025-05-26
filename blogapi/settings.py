@@ -99,6 +99,7 @@ WSGI_APPLICATION = 'blogapi.wsgi.application'
 # }
 
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 DATABASES = {
     'default': {
