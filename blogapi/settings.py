@@ -98,14 +98,7 @@ WSGI_APPLICATION = 'blogapi.wsgi.application'
 #     }
 # }
 
-CORS_ALLOW_ALL_ORIGINS = False
-
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "https://your-frontend.vercel.app",
-]
-
-CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = True
 
 DATABASES = {
     'default': {
