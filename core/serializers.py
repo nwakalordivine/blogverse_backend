@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Userprofile
 
+
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
@@ -19,16 +20,15 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
         return user
 
+
 class UserprofileSerializer(serializers.ModelSerializer):
-    avatar = serializers.ImageField(read_only=True)
+    avatar = serializers.ImageField()
     email = serializers.ReadOnlyField(source="user.username")
     class Meta:
         model = Userprofile
         fields = ['id', 'first_name', 'last_name', 'email', 'bio', 'avatar']
         read_only_fields = ['email']
 
-    
-    
 
 class uploadSerializer(serializers.ModelSerializer):
     avatar = serializers.ImageField()

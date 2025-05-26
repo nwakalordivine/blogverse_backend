@@ -44,33 +44,6 @@ class BlogimageUpdateAPIViews(generics.UpdateAPIView):
     lookup_field = 'pk'
 
 
-class CommentListCreateAPIView(generics.ListCreateAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-
-    def get_permissions(self):
-        if self.request.method == 'POST':
-            return [permissions.IsAuthenticated()]
-        return [permissions.AllowAny()]
-
-    def perform_create(self, serializer):
-        comment = serializer.save(author=self.request.user)
-        post = comment.post
-        # Send notification
-        if post.author != self.request.user:
-            Notification.objects.create(
-                recipient=post.author,
-                sender=self.request.user,
-                post=post,
-                notification_type='comment',
-                message=f"{self.request.user.userprofile.first_name} commented on your post."
-            )
-
-    def get_queryset(self):
-        post_id = self.request.query_params.get('post')
-        if post_id:
-            return Comment.objects.filter(post_id=post_id)
-        return Comment.objects.all()
 
 class CommentRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comment.objects.all()
@@ -78,7 +51,7 @@ class CommentRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView)
 
     def get_permissions(self):
         if self.request.method in ['PUT', 'PATCH', 'DELETE']:
-            return [permissions.IsAuthenticated(), IsOwnerOrReadOnly()]
+            return [IsOwnerOrReadOnly()]
         return [permissions.AllowAny()]
 
 class ToggleLikePostAPIView(APIView):
@@ -137,4 +110,22 @@ class AuthorDashboardAPIView(generics.GenericAPIView):
         }
         serializer = self.get_serializer(dashboard_data, context={'request': request})
         return Response(serializer.data)
+
+class CommentCreateAPIView(generics.CreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        comment = serializer.save(author=self.request.user)
+        post = comment.post
+        # Send notification
+        if post.author != self.request.user:
+            Notification.objects.create(
+                recipient=post.author,
+                sender=self.request.user,
+                post=post,
+                notification_type='comment',
+                message=f"{self.request.user.userprofile.first_name} commented on your post."
+            )
 

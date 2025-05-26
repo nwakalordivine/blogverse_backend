@@ -9,6 +9,6 @@ class Userprofile(models.Model):
     last_name = models.CharField(max_length=100, blank=True, null=True)
     email = models.EmailField(max_length=100, blank=True, null=True)
     bio = models.TextField(blank=True, default="Hi i'm new here")
-    avatar = CloudinaryField('avatar', blank=True, default='https://res.cloudinary.com/dfcon4lff/image/upload/v1747749458/tlnjhjrdeqdjfyxxn9as.png')
+    avatar = CloudinaryField('avatar', blank=True)
     is_author = models.BooleanField(default=True)
     

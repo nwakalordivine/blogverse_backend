@@ -2,18 +2,36 @@ from rest_framework import serializers
 from .models import Blogpost, Comment, Notification
 
 
+class CommentSerializer(serializers.ModelSerializer):
+    author_first_name = serializers.CharField(source='author.userprofile.first_name', read_only=True)
+    author_avatar = serializers.ImageField(source='author.userprofile.avatar', read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'post', 'author', 'author_avatar', 'author_first_name', 'content', 'created_at', 'updated_at']
+        read_only_fields = ['author', 'author_first_name', 'created_at', 'updated_at', 'author_avatar']
+
 class BlogpostSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(required=False, allow_null=True)
     like_count = serializers.IntegerField(read_only=True)
     is_liked = serializers.SerializerMethodField()
+    comments = CommentSerializer(many=True, read_only=True)
     tags = serializers.ListField(
         child=serializers.CharField(),
         required=False
     )
+    author_first_name = serializers.CharField(source='author.userprofile.first_name', read_only=True)
+    author_last_name = serializers.CharField(source='author.userprofile.last_name', read_only=True)
+    author_avatar = serializers.ImageField(source='author.userprofile.avatar', read_only=True)
+    author_bio = serializers.CharField(source='author.userprofile.bio', read_only=True)
 
     class Meta:
         model = Blogpost
-        fields = ["id", "title", "image", "content", "category", "tags", "created_at", "like_count", "is_liked"]
+        fields = [
+            "id", "title", "image", "content", "category", "comments", "tags",
+            "created_at", "like_count", "is_liked",
+            "author_first_name", "author_last_name", "author_avatar", "author_bio"
+        ]
 
     def get_like_count(self, obj):
         # Use the annotated value if present (from trending view), else fallback to the property
@@ -31,14 +49,6 @@ class BlogimageSerializer(serializers.ModelSerializer):
         model = Blogpost
         fields = ["image"]
 
-
-class CommentSerializer(serializers.ModelSerializer):
-    author_first_name = serializers.CharField(source='author.userprofile.first_name', read_only=True)
-
-    class Meta:
-        model = Comment
-        fields = ['id', 'post', 'author', 'author_first_name', 'content', 'created_at', 'updated_at']
-        read_only_fields = ['author', 'author_first_name', 'created_at', 'updated_at']
 
 
 class NotificationSerializer(serializers.ModelSerializer):
