@@ -3,9 +3,13 @@ from .models import Blogpost, Comment, Notification
 
 
 class BlogpostSerializer(serializers.ModelSerializer):
-    image = serializers.ImageField(read_only=True)
+    image = serializers.ImageField(required=False, allow_null=True)
     like_count = serializers.IntegerField(read_only=True)
     is_liked = serializers.SerializerMethodField()
+    tags = serializers.ListField(
+        child=serializers.CharField(),
+        required=False
+    )
 
     class Meta:
         model = Blogpost
@@ -43,4 +47,11 @@ class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = ['id', 'recipient', 'sender', 'sender_first_name', 'post', 'notification_type', 'message', 'created_at', 'is_read']
+
+class AuthorDashboardSerializer(serializers.Serializer):
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    avatar = serializers.CharField()
+    total_likes = serializers.IntegerField()
+    posts = BlogpostSerializer(many=True)
 

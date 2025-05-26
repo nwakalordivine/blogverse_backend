@@ -1,5 +1,5 @@
 from .models import Blogpost, Comment, Notification
-from .serializers import BlogpostSerializer, BlogimageSerializer, CommentSerializer, NotificationSerializer
+from .serializers import BlogpostSerializer, BlogimageSerializer, CommentSerializer, NotificationSerializer, AuthorDashboardSerializer
 from rest_framework import generics, permissions, filters
 from blogpost.permissions import IsOwnerOrReadOnly
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -35,14 +35,8 @@ class BlogPostDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     def perform_update(self, serializer):
         serializer.save(author=self.request.user)
     
-class BlogimageCreateAPIViews(generics.CreateAPIView):
-    queryset = Blogpost.objects.all()
-    serializer_class = BlogimageSerializer
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsOwnerOrReadOnly]
-    
 
-class BlogimageRetrieveUpdateDestroyAPIViews(generics.RetrieveUpdateDestroyAPIView):
+class BlogimageUpdateAPIViews(generics.UpdateAPIView):
     queryset = Blogpost.objects.all()
     serializer_class = BlogimageSerializer
     authentication_classes = [JWTAuthentication]
@@ -87,30 +81,28 @@ class CommentRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView)
             return [permissions.IsAuthenticated(), IsOwnerOrReadOnly()]
         return [permissions.AllowAny()]
 
-class LikePostAPIView(APIView):
+class ToggleLikePostAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
         post = Blogpost.objects.get(pk=pk)
-        post.likes.add(request.user)
-        # Send notification
-        if post.author != request.user:
-            Notification.objects.create(
-                recipient=post.author,
-                sender=request.user,
-                post=post,
-                notification_type='like',
-                message=f"{request.user.userprofile.first_name} liked your post."
-            )
-        return Response({'status': 'liked', 'like_count': post.like_count})
-
-class UnlikePostAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request, pk):
-        post = Blogpost.objects.get(pk=pk)
-        post.likes.remove(request.user)
-        return Response({'status': 'unliked', 'like_count': post.like_count})
+        user = request.user
+        if post.likes.filter(id=user.id).exists():
+            post.likes.remove(user)
+            status = 'unliked'
+        else:
+            post.likes.add(user)
+            status = 'liked'
+            # Send notification only on like
+            if post.author != user:
+                Notification.objects.create(
+                    recipient=post.author,
+                    sender=user,
+                    post=post,
+                    notification_type='like',
+                    message=f"{user.userprofile.first_name} liked your post."
+                )
+        return Response({'status': status, 'like_count': post.like_count})
 
 class TrendingPostsAPIView(generics.ListAPIView):
     serializer_class = BlogpostSerializer
@@ -126,7 +118,8 @@ class NotificationListAPIView(generics.ListAPIView):
     def get_queryset(self):
         return Notification.objects.filter(recipient=self.request.user).order_by('-created_at')
 
-class AuthorDashboardAPIView(APIView):
+class AuthorDashboardAPIView(generics.GenericAPIView):
+    serializer_class = AuthorDashboardSerializer
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -134,13 +127,14 @@ class AuthorDashboardAPIView(APIView):
         profile = Userprofile.objects.get(user=user)
         posts = Blogpost.objects.filter(author=user)
         total_likes = sum(post.likes.count() for post in posts)
-        posts_data = BlogpostSerializer(posts, many=True, context={'request': request}).data
 
-        return Response({
+        dashboard_data = {
             "first_name": profile.first_name,
             "last_name": profile.last_name,
             "avatar": profile.avatar.url if profile.avatar else None,
             "total_likes": total_likes,
-            "posts": posts_data
-        })
+            "posts": posts  # <-- Pass queryset, not serialized data!
+        }
+        serializer = self.get_serializer(dashboard_data, context={'request': request})
+        return Response(serializer.data)
 

@@ -11,7 +11,7 @@ class RegisterAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
 
-class UserprofileDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+class UserprofileDetailAPIView(generics.ListAPIView):
     queryset = Userprofile.objects.all()
     serializer_class = UserprofileSerializer
     lookup_field = 'pk'
@@ -25,33 +25,10 @@ class AvatarUpdateAPIViews(generics.UpdateAPIView):
     def get_object(self):
         return Userprofile.objects.get(user=self.request.user)
 
-class UserMeAPIView(APIView):
+
+class UserMeAPIView(generics.RetrieveUpdateAPIView):
+    serializer_class = UserprofileSerializer
     permission_classes = [IsAuthenticated]
-    """
-    get:
-    Return the current user's profile.
-    
-    put:
-    Update the current user's profile.
 
-    patch:
-    Partially update the current user's profile.
-    """
-    def get(self, request):
-        profile = Userprofile.objects.get(user=request.user)
-        serializer = UserprofileSerializer(profile)
-        return Response(serializer.data)
-
-    def put(self, request):
-        profile = Userprofile.objects.get(user=request.user)
-        serializer = UserprofileSerializer(profile, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
-
-    def patch(self, request):
-        profile = Userprofile.objects.get(user=request.user)
-        serializer = UserprofileSerializer(profile, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+    def get_object(self):
+        return Userprofile.objects.get(user=self.request.user)
