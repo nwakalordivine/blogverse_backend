@@ -54,4 +54,3 @@ class AuthorDashboardSerializer(serializers.Serializer):
     avatar = serializers.CharField()
     total_likes = serializers.IntegerField()
     posts = BlogpostSerializer(many=True)
-

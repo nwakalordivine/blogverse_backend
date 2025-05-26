@@ -3,8 +3,6 @@ from .serializers import RegisterSerializer, UserprofileSerializer, uploadSerial
 from django.contrib.auth.models import User
 from .models import Userprofile
 from blogpost.permissions import IsOwnerOrReadOnly
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 class RegisterAPIView(generics.CreateAPIView):
@@ -16,7 +14,6 @@ class UserprofileDetailAPIView(generics.ListAPIView):
     serializer_class = UserprofileSerializer
     lookup_field = 'pk'
     permission_classes = [IsOwnerOrReadOnly]
-
 
 class AvatarUpdateAPIViews(generics.UpdateAPIView):
     serializer_class = uploadSerializer
