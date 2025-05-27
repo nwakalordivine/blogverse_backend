@@ -11,6 +11,7 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ['id', 'post', 'author', 'author_avatar', 'author_first_name', 'content', 'created_at', 'updated_at']
         read_only_fields = ['author', 'author_first_name', 'created_at', 'updated_at', 'author_avatar']
 
+
 class BlogpostSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(required=False, allow_null=True)
     like_count = serializers.IntegerField(read_only=True)
@@ -34,7 +35,6 @@ class BlogpostSerializer(serializers.ModelSerializer):
         ]
 
     def get_like_count(self, obj):
-        # Use the annotated value if present (from trending view), else fallback to the property
         return getattr(obj, 'num_likes', obj.like_count)
     
     def get_is_liked(self, obj):
@@ -43,12 +43,12 @@ class BlogpostSerializer(serializers.ModelSerializer):
             return obj.likes.filter(id=user.id).exists()
         return False
 
+
 class BlogimageSerializer(serializers.ModelSerializer):
     image = serializers.ImageField()
     class Meta:
         model = Blogpost
         fields = ["image"]
-
 
 
 class NotificationSerializer(serializers.ModelSerializer):
