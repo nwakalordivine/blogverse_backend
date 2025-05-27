@@ -5,11 +5,12 @@ from .models import Blogpost, Comment, Notification
 class CommentSerializer(serializers.ModelSerializer):
     author_first_name = serializers.CharField(source='author.userprofile.first_name', read_only=True)
     author_avatar = serializers.ImageField(source='author.userprofile.avatar', read_only=True)
+    post = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Comment
         fields = ['id', 'post', 'author', 'author_avatar', 'author_first_name', 'content', 'created_at', 'updated_at']
-        read_only_fields = ['author', 'author_first_name', 'created_at', 'updated_at', 'author_avatar']
+        read_only_fields = ['author', 'post', 'author_first_name', 'created_at', 'updated_at', 'author_avatar']
 
 
 class BlogpostSerializer(serializers.ModelSerializer):

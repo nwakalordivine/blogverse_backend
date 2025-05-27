@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Count
 from core.models import Userprofile
+from django.shortcuts import get_object_or_404
 # Create your views here.
 
 class BlogpostListCreateAPIView(generics.ListCreateAPIView):
@@ -117,8 +118,9 @@ class CommentCreateAPIView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
-        comment = serializer.save(author=self.request.user)
-        post = comment.post
+        post = get_object_or_404(Blogpost, pk=self.kwargs['pk'])
+        comment = serializer.save(author=self.request.user, post=post)
+        
         # Send notification
         if post.author != self.request.user:
             Notification.objects.create(
