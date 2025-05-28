@@ -119,7 +119,7 @@ class CommentCreateAPIView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         post = get_object_or_404(Blogpost, pk=self.kwargs['pk'])
-        comment = serializer.save(author=self.request.user, post=post)
+        serializer.save(author=self.request.user, post=post)
         
         # Send notification
         if post.author != self.request.user:

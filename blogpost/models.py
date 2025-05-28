@@ -8,7 +8,7 @@ from django.contrib.postgres.fields import ArrayField
 class Blogpost(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blogposts')
     title = models.CharField(max_length=100)
-    content = models.TextField(max_length=1000, blank=True)
+    content = models.TextField(max_length=1000000, blank=True)
     image = CloudinaryField('image', blank=True, null=True)
     category = models.CharField(max_length=100, blank=True, null=True)
     tags = ArrayField(
