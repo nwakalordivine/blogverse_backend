@@ -105,10 +105,10 @@ CORS_ALLOW_CREDENTIALS = True
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'neondb',
-        'USER': 'neondb_owner',
-        'PASSWORD': 'npg_JlT9wxqDIa2U',
-        'HOST': 'ep-tiny-sun-a2b1zpi6-pooler.eu-central-1.aws.neon.tech',
+        'NAME': 'blogsite_6cfc',
+        'USER': 'blogsite_6cfc_user',
+        'PASSWORD': 'NFz2Pgn3EZSdWTdiXZ4nojYm2NQx6kG6',
+        'HOST': 'dpg-d0hoj7k9c44c739nri7g-a.frankfurt-postgres.render.com',
         'PORT': '5432',
         'OPTIONS': {
             'sslmode': 'require',
