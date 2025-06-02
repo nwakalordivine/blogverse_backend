@@ -59,6 +59,7 @@ class NotificationSerializer(serializers.ModelSerializer):
         model = Notification
         fields = ['id', 'recipient', 'sender', 'sender_first_name', 'post', 'notification_type', 'message', 'created_at', 'is_read']
 
+
 class AuthorDashboardSerializer(serializers.Serializer):
     first_name = serializers.CharField()
     last_name = serializers.CharField()

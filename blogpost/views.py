@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from django.db.models import Count
 from core.models import Userprofile
 from django.shortcuts import get_object_or_404
+from rest_framework import status
 # Create your views here.
 
 class BlogpostListCreateAPIView(generics.ListCreateAPIView):
@@ -130,4 +131,22 @@ class CommentCreateAPIView(generics.CreateAPIView):
                 notification_type='comment',
                 message=f"{self.request.user.userprofile.first_name} commented on your post."
             )
+
+
+class MarkNotificationAsReadAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        notification = get_object_or_404(Notification, pk=pk, recipient=request.user)
+        notification.is_read = True
+        notification.save()
+        return Response({'status': 'read'}, status=status.HTTP_200_OK)
+
+class MarkAllNotificationsAsReadAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        notifications = Notification.objects.filter(recipient=request.user, is_read=False)
+        count = notifications.update(is_read=True)
+        return Response({'status': 'all read', 'updated': count}, status=status.HTTP_200_OK)
 

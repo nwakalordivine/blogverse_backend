@@ -10,5 +10,7 @@ urlpatterns = [
     path('like/<int:pk>/', views.ToggleLikePostAPIView.as_view(), name='like-post'),
     path('trending/', views.TrendingPostsAPIView.as_view(), name='trending-posts'),
     path('notifications/', views.NotificationListAPIView.as_view(), name='notifications'),
-    path('dashboard/', views.AuthorDashboardAPIView.as_view(), name='author-dashboard')
+    path('dashboard/', views.AuthorDashboardAPIView.as_view(), name='author-dashboard'),
+    path('notifications/<int:pk>/', views.MarkNotificationAsReadAPIView.as_view(), name='mark-notification-as-read'),
+    path('notifications/mark-all-read/', views.MarkAllNotificationsAsReadAPIView.as_view(), name='mark-all-notifications-as-read'),
 ]
