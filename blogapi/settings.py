@@ -105,11 +105,11 @@ CORS_ALLOW_CREDENTIALS = True
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'blogsite_6cfc',
-        'USER': 'blogsite_6cfc_user',
-        'PASSWORD': 'NFz2Pgn3EZSdWTdiXZ4nojYm2NQx6kG6',
-        'HOST': 'dpg-d0hoj7k9c44c739nri7g-a.frankfurt-postgres.render.com',
-        'PORT': '5432',
+        'NAME': 'postgres',
+        'USER': 'postgres.eldliybpfufiimybwutr',
+        'PASSWORD': 'qqqqwwwweeeerrrrttttyyyy',
+        'HOST': 'aws-0-eu-central-1.pooler.supabase.com',
+        'PORT': '6543',
         'OPTIONS': {
             'sslmode': 'require',
         },
