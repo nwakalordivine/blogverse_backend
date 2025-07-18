@@ -3,15 +3,16 @@ from .serializers import RegisterSerializer, UserprofileSerializer, uploadSerial
 from django.contrib.auth.models import User
 from .models import Userprofile
 from rest_framework.permissions import IsAuthenticated
+from blogpost.permissions import IsAdmin
 
 class RegisterAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
 
-class UserprofileDetailAPIView(generics.ListAPIView):
+class UserprofileDetailAPIView(generics.RetrieveAPIView):
     queryset = Userprofile.objects.all()
     serializer_class = UserprofileSerializer
-    lookup_field = 'pk'
+    permission_classes = [IsAuthenticated]
 
 
 class AvatarUpdateAPIViews(generics.UpdateAPIView):
@@ -28,3 +29,19 @@ class UserMeAPIView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return Userprofile.objects.get(user=self.request.user)
+    
+class UserProfileRetrieveUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Userprofile.objects.all()
+    serializer_class = UserprofileSerializer
+    permission_classes = [IsAdmin]
+
+    def perform_destroy(self, instance):
+        user = instance.user
+        instance.delete()
+        user.delete()
+
+class UserProfileListAPIView(generics.ListAPIView):
+    queryset = Userprofile.objects.all()
+    serializer_class = UserprofileSerializer
+    permission_classes = [IsAdmin]
+

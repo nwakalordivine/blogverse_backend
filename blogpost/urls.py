@@ -13,4 +13,6 @@ urlpatterns = [
     path('dashboard/', views.AuthorDashboardAPIView.as_view(), name='author-dashboard'),
     path('notifications/<int:pk>/', views.MarkNotificationAsReadAPIView.as_view(), name='mark-notification-as-read'),
     path('notifications/mark-all-read/', views.MarkAllNotificationsAsReadAPIView.as_view(), name='mark-all-notifications-as-read'),
+    path('admin/posts/<int:pk>/', views.BlogpostRetrieveUpdateDestroyAPIView.as_view(), name='admin-post-detail'),
+    path('admin/comments/<int:pk>/', views.AdminCommentRetrieveUpdateDestroyAPIView.as_view(), name='admin-comment-detail'),
 ]

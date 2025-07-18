@@ -1,4 +1,5 @@
 from rest_framework import permissions
+from .models import Blogpost
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
@@ -14,3 +15,6 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         # Write permissions are only allowed to the owner of the blogpost.
         return obj.author == request.user
     
+class IsAdmin(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and hasattr(request.user, 'userprofile') and request.user.userprofile.is_admin

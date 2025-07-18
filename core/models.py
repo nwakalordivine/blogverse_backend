@@ -11,4 +11,5 @@ class Userprofile(models.Model):
     bio = models.TextField(blank=True, default="Hi i'm new here")
     avatar = CloudinaryField('avatar', blank=True)
     is_author = models.BooleanField(default=True)
+    is_admin = models.BooleanField(default=False)
     

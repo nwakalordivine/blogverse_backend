@@ -14,4 +14,6 @@ urlpatterns = [
     path("api/users/me/", views.UserMeAPIView.as_view(), name="user-me"),
     path("api/users/<int:pk>/", views.UserprofileDetailAPIView.as_view(), name="user-profile"),
     path("api/users/avatar/", views.AvatarUpdateAPIViews.as_view(), name="update-avatar"),
+    path("api/admin/all-profile/", views.UserProfileListAPIView.as_view(), name="user-profile-list"),
+    path("api/admin/userprofile/<int:pk>/update/", views.UserProfileRetrieveUpdateDeleteAPIView.as_view(), name="user-profile-update-delete"),
 ]

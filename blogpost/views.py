@@ -1,7 +1,7 @@
 from .models import Blogpost, Comment, Notification
 from .serializers import BlogpostSerializer, BlogimageSerializer, CommentSerializer, NotificationSerializer, AuthorDashboardSerializer
 from rest_framework import generics, permissions, filters
-from blogpost.permissions import IsOwnerOrReadOnly
+from blogpost.permissions import IsOwnerOrReadOnly, IsAdmin
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
@@ -108,7 +108,7 @@ class AuthorDashboardAPIView(generics.GenericAPIView):
             "last_name": profile.last_name,
             "avatar": profile.avatar.url if profile.avatar else None,
             "total_likes": total_likes,
-            "posts": posts  # <-- Pass queryset, not serialized data!
+            "posts": posts 
         }
         serializer = self.get_serializer(dashboard_data, context={'request': request})
         return Response(serializer.data)
@@ -150,3 +150,12 @@ class MarkAllNotificationsAsReadAPIView(APIView):
         count = notifications.update(is_read=True)
         return Response({'status': 'all read', 'updated': count}, status=status.HTTP_200_OK)
 
+class BlogpostRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Blogpost.objects.all()
+    serializer_class = BlogpostSerializer
+    permission_classes = [IsAdmin]
+
+class AdminCommentRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [IsAdmin]
