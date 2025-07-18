@@ -26,8 +26,8 @@ class UserprofileSerializer(serializers.ModelSerializer):
     email = serializers.ReadOnlyField(source="user.username")
     class Meta:
         model = Userprofile
-        fields = ['id', 'first_name', 'last_name', 'email', 'bio', 'avatar']
-        read_only_fields = ['email']
+        fields = ['id', 'first_name', 'last_name', 'email', 'bio', 'avatar', 'is_admin']
+        read_only_fields = ['email', 'is_admin']
 
 
 class uploadSerializer(serializers.ModelSerializer):
